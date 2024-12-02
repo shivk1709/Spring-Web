@@ -1,6 +1,6 @@
 package com.project.java.dao;
 
-import com.project.java.Entity.Users;
+import com.project.java.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

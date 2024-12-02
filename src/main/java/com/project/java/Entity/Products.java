@@ -1,4 +1,4 @@
-package com.project.java.Entity;
+package com.project.java.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

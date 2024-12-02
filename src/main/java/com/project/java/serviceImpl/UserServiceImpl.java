@@ -1,14 +1,11 @@
 package com.project.java.serviceImpl;
 
-import com.project.java.Entity.Users;
+import com.project.java.entity.Users;
 import com.project.java.dao.UsersRepository;
 import com.project.java.dto.UsersDto;
-import com.project.java.dto.UsersInfo;
 import com.project.java.exception.ResourceNotFoundException;
 import com.project.java.service.UserService;
-import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

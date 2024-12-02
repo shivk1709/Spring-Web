@@ -1,6 +1,5 @@
 package com.project.java.dto;
 
-import com.project.java.Entity.Products;
 import lombok.Data;
 
 import java.time.LocalDateTime;

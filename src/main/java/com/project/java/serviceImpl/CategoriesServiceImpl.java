@@ -1,6 +1,6 @@
 package com.project.java.serviceImpl;
 
-import com.project.java.Entity.Categories;
+import com.project.java.entity.Categories;
 import com.project.java.dao.CategoriesRepository;
 import com.project.java.dto.CategoriesDto;
 import com.project.java.service.CategoriesService;

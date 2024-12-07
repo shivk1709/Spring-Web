@@ -1,7 +1,9 @@
 package com.project.java.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +23,9 @@ public class Users {
     @Column(name = "PASSWORD")
     private String password;
 
+    @Column(name = "USERNAME")
+    private String username;
+
     @Column(name = "ROLE")
     private String role;
 
@@ -28,12 +33,12 @@ public class Users {
     private String status;
 
     @Column(name = "CREATED_AT", updatable = false)
-    private LocalDateTime created_at;
+    private String created_at;
 
     @Column(name = "UPDATED_AT")
-    private LocalDateTime updated_at;
+    private String updated_at;
 
     @Column(name = "DELETED_AT")
-    private LocalDateTime deleted_at;
+    private String deleted_at;
 
 }

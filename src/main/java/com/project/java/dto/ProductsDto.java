@@ -1,7 +1,6 @@
 package com.project.java.dto;
 
 import lombok.Data;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +10,8 @@ public class ProductsDto {
     private int id;
     private String name;
     private String description;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
-    private LocalDateTime deleted_at;
+    private String created_at;
+    private String updated_at;
+    private String deleted_at;
 
 }

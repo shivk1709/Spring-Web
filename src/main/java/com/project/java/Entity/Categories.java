@@ -23,13 +23,13 @@ public class Categories {
     private String description;
 
     @Column(name = "CREATED_AT", updatable = false)
-    private LocalDateTime created_at;
+    private String created_at;
 
     @Column(name = "UPDATED_AT")
-    private LocalDateTime updated_at;
+    private String updated_at;
 
     @Column(name = "DELETED_AT")
-    private LocalDateTime deleted_at;
+    private String deleted_at;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Products> products;

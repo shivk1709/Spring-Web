@@ -11,10 +11,11 @@ public class UsersDto {
     private int id;
     private String email;
     private String password;
+    private String username;
     private String role;
     private String status;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
-    private LocalDateTime deleted_at;
+    private String created_at;
+    private String updated_at;
+    private String deleted_at;
 
 }

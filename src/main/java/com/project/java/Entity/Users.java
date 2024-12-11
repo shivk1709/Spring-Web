@@ -1,15 +1,14 @@
 package com.project.java.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "USERS")
-@Data
 public class Users {
 
     @Id
@@ -26,9 +25,6 @@ public class Users {
     @Column(name = "USERNAME")
     private String username;
 
-    @Column(name = "ROLE")
-    private String role;
-
     @Column(name = "STATUS")
     private String status;
 
@@ -40,5 +36,14 @@ public class Users {
 
     @Column(name = "DELETED_AT")
     private String deleted_at;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "USER_ROLE",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID")
+    )
+    private Set<Roles> roles;
+
 
 }

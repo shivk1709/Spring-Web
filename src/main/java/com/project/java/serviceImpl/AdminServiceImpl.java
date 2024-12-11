@@ -1,6 +1,8 @@
 package com.project.java.serviceImpl;
 
 import com.project.java.Util.DateUtil;
+import com.project.java.dao.RolesRepository;
+import com.project.java.entity.Roles;
 import com.project.java.entity.Users;
 import com.project.java.dao.UsersRepository;
 import com.project.java.dto.UsersDto;
@@ -11,49 +13,61 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
     private static final String INACTIVE = "INACTIVE";
     private static final String ACTIVE = "ACTIVE";
     private static final String USER = "USER";
+    private static final String ADMIN = "ADMIN";
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final UsersRepository usersRepository;
     private final ModelMapper modelMapper;
+    private final RolesRepository rolesRepository;
 
-    public AdminServiceImpl(UsersRepository usersRepository, ModelMapper modelMapper) {
-        this.usersRepository = usersRepository;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public List<UsersDto> getAllUsers() {
         List<Users> users = usersRepository.findAll();
-        return users.stream().map(user -> modelMapper.map(user, UsersDto.class)).toList();
+        return users.stream().map(user -> {
+            UsersDto userDto = modelMapper.map(user, UsersDto.class);
+            userDto.setRoleNames(user.getRoles());
+            return userDto;
+        }).toList();
     }
 
     @Override
     public UsersDto getUserById(int id) {
         Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not Found for Id - " + id));
-        return modelMapper.map(user, UsersDto.class);
+        UsersDto mappedDto = modelMapper.map(user, UsersDto.class);
+        mappedDto.setRoleNames(user.getRoles());
+        return mappedDto;
     }
 
     @Override
     public List<UsersDto> getUserByEmail(String role) {
-        List<Users> users = usersRepository.findByRole(role);
-        return users.stream().map(user -> modelMapper.map(user, UsersDto.class)).toList();
+//        List<Users> users = usersRepository.findByRole(role);
+//        return users.stream().map(user -> modelMapper.map(user, UsersDto.class)).toList();
+        return List.of();
     }
 
     @Override
     public List<UsersDto> getUserByStatus(String status) {
         List<Users> users = usersRepository.findByStatus(status);
-        return users.stream().map(user -> modelMapper.map(user, UsersDto.class)).toList();
+        return users.stream().map(user -> {
+            UsersDto userDto = modelMapper.map(user, UsersDto.class);
+            userDto.setRoleNames(user.getRoles());
+            return userDto;
+        }).toList();
     }
 
     @Override
@@ -67,28 +81,44 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UsersDto updateUser(int id, UsersDto userDto) {
+    @Transactional
+    public UsersDto makeAdmin(int id) {
         Users fetchedUser = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not Exist"));
-        fetchedUser.setEmail(userDto.getEmail());
-        fetchedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        fetchedUser.setRole(userDto.getRole().toUpperCase());
-        fetchedUser.setDeleted_at(null);
         fetchedUser.setUpdated_at(DateUtil.formatDate());
         fetchedUser.setStatus(ACTIVE);
 
+        Set<Roles> roles = new HashSet<>();
+        Roles fetchedRole = rolesRepository.findByName(ADMIN);
+        roles.add(fetchedRole);
+        fetchedUser.setRoles(roles);
+
         Users updatedUser = usersRepository.save(fetchedUser);
-        return modelMapper.map(updatedUser, UsersDto.class);
+        UsersDto dto = modelMapper.map(updatedUser, UsersDto.class);
+        dto.setRoleNames(fetchedUser.getRoles());
+        return dto;
     }
 
     @Override
     public UsersDto saveUser(UsersDto userDto) {
         Users user = modelMapper.map(userDto, Users.class);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRole(userDto.getRole().toUpperCase());
         user.setStatus(ACTIVE);
         user.setCreated_at(DateUtil.formatDate());
-        user.setUpdated_at(null);
-        user.setDeleted_at(null);
+
+        Set<Roles> roles = new HashSet<>();
+        Set<String> rolesGiven = userDto.getRoless();
+
+        for (String role : rolesGiven) {
+            Roles fetchedRole = rolesRepository.findByName(role);
+            if (fetchedRole == null) {
+                fetchedRole = new Roles();
+                fetchedRole.setName(role);
+                rolesRepository.save(fetchedRole);
+            }
+            roles.add(fetchedRole);
+        }
+        user.setRoles(roles);
+
         Users savedUser = usersRepository.save(user);
         return modelMapper.map(savedUser, UsersDto.class);
     }

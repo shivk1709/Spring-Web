@@ -6,5 +6,6 @@ public interface UserService {
 
     UsersDto updateUser(int id, UsersDto user);
     UsersDto saveUser(UsersDto user);
+    String checkLogin(UsersDto user);
 
 }

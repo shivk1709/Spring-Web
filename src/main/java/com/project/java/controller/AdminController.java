@@ -1,7 +1,9 @@
 package com.project.java.controller;
 
+import com.project.java.dao.UsersRepository;
 import com.project.java.dto.UsersDto;
 import com.project.java.dto.UsersInfo;
+import com.project.java.entity.Users;
 import com.project.java.service.AdminService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final UsersRepository usersRepository;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers() {
@@ -70,7 +73,7 @@ public class AdminController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@RequestBody UsersDto user, @PathVariable int id) {
-        UsersDto usersDto = adminService.updateUser(id, user);
+        UsersDto usersDto = adminService.makeAdmin(id);
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
@@ -81,5 +84,11 @@ public class AdminController {
         usersInfo.setUsers(users);
         return usersInfo;
     }
+
+    @GetMapping("/{name}")
+    public List<Users> findUser(@PathVariable String name) {
+        return usersRepository.findByStatus(name);
+    }
+
 
 }

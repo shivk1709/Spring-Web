@@ -7,9 +7,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "PRODUCTS")
-@Data
 public class Products {
 
     @Id

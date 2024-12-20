@@ -1,7 +1,8 @@
 package com.project.java.serviceImpl;
 
-import com.project.java.Util.DateUtil;
+import com.project.java.Utils.DateUtils;
 import com.project.java.dao.RolesRepository;
+import com.project.java.dto.OrdersDto;
 import com.project.java.entity.Roles;
 import com.project.java.entity.Users;
 import com.project.java.dao.UsersRepository;
@@ -41,15 +42,17 @@ public class AdminServiceImpl implements AdminService {
         return users.stream().map(user -> {
             UsersDto userDto = modelMapper.map(user, UsersDto.class);
             userDto.setRoleNames(user.getRoles());
+            userDto.setOrderss(setOrders(user));
             return userDto;
         }).toList();
     }
 
     @Override
     public UsersDto getUserById(int id) {
-        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not Found for Id - " + id));
+        Users user = getById(id);
         UsersDto mappedDto = modelMapper.map(user, UsersDto.class);
         mappedDto.setRoleNames(user.getRoles());
+        mappedDto.setOrderss(setOrders(user));
         return mappedDto;
     }
 
@@ -66,16 +69,17 @@ public class AdminServiceImpl implements AdminService {
         return users.stream().map(user -> {
             UsersDto userDto = modelMapper.map(user, UsersDto.class);
             userDto.setRoleNames(user.getRoles());
+            userDto.setOrderss(setOrders(user));
             return userDto;
         }).toList();
     }
 
     @Override
     public UsersDto inActiveUser(int id) {
-        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User Not Found for Id - " + id));
+        Users user = getById(id);
         user.setStatus(INACTIVE);
-        user.setUpdated_at(DateUtil.formatDate());
-        user.setDeleted_at(DateUtil.formatDate());
+        user.setUpdated_at(DateUtils.formatDate());
+        user.setDeleted_at(DateUtils.formatDate());
         Users updated_user = usersRepository.save(user);
         return modelMapper.map(updated_user, UsersDto.class);
     }
@@ -83,8 +87,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public UsersDto makeAdmin(int id) {
-        Users fetchedUser = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not Exist"));
-        fetchedUser.setUpdated_at(DateUtil.formatDate());
+        Users fetchedUser = getById(id);
+        fetchedUser.setUpdated_at(DateUtils.formatDate());
         fetchedUser.setStatus(ACTIVE);
 
         Set<Roles> roles = new HashSet<>();
@@ -95,15 +99,17 @@ public class AdminServiceImpl implements AdminService {
         Users updatedUser = usersRepository.save(fetchedUser);
         UsersDto dto = modelMapper.map(updatedUser, UsersDto.class);
         dto.setRoleNames(fetchedUser.getRoles());
+        dto.setOrderss(setOrders(updatedUser));
         return dto;
     }
 
     @Override
+    @Transactional
     public UsersDto saveUser(UsersDto userDto) {
         Users user = modelMapper.map(userDto, Users.class);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setStatus(ACTIVE);
-        user.setCreated_at(DateUtil.formatDate());
+        user.setCreated_at(DateUtils.formatDate());
 
         Set<Roles> roles = new HashSet<>();
         Set<String> rolesGiven = userDto.getRoless();
@@ -121,6 +127,14 @@ public class AdminServiceImpl implements AdminService {
 
         Users savedUser = usersRepository.save(user);
         return modelMapper.map(savedUser, UsersDto.class);
+    }
+
+    private List<OrdersDto> setOrders(Users user) {
+        return user.getOrders().stream().map(order -> modelMapper.map(order, OrdersDto.class)).toList();
+    }
+
+    private Users getById(int id) {
+        return usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not Exist"));
     }
 
 }

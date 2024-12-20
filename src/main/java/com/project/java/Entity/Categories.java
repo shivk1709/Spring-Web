@@ -1,6 +1,8 @@
 package com.project.java.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -16,9 +18,13 @@ public class Categories {
     @Column(name = "ID")
     private int id;
 
-    @Column(name = "NAME")
+    @NotBlank(message = "Category name cannot be empty")
+    @Size(max = 100, message = "Category name cannot exceed 100 characters")
+    @Column(name = "NAME", nullable = false)
     private String name;
 
+    @NotBlank(message = "Category description cannot be empty")
+    @Size(max = 255, message = "Category description cannot exceed 255 characters")
     @Column(name = "DESCRIPTION")
     private String description;
 
@@ -31,7 +37,7 @@ public class Categories {
     @Column(name = "DELETED_AT")
     private String deleted_at;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Products> products;
 
 }

@@ -4,6 +4,7 @@ import com.project.java.dao.UsersRepository;
 import com.project.java.dto.UsersDto;
 import com.project.java.entity.Users;
 import com.project.java.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +23,19 @@ public class UserController {
     private final UsersRepository usersRepository;
 
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody UsersDto user) {
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UsersDto user) {
         UsersDto usersDto = userService.saveUser(user);
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UsersDto user, @PathVariable int id) {
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UsersDto user, @PathVariable int id) {
         UsersDto usersDto = userService.updateUser(id, user);
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> checkLogin(@RequestBody UsersDto user) {
+    public ResponseEntity<String> checkLogin(@RequestBody @Valid UsersDto user) {
         Set<String> roles = new HashSet<>(Set.of("USER"));
         user.setRoless(roles);
         return new ResponseEntity<>(userService.checkLogin(user), HttpStatus.OK);

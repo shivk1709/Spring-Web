@@ -7,4 +7,6 @@ public interface CategoriesService {
 
     CategoriesDto getCategoriesByName(String name);
     List<CategoriesDto> getAllCategories();
+    CategoriesDto addCategory(CategoriesDto categoriesDto);
+    CategoriesDto updateProductsByCategory(CategoriesDto categoriesDto, String name);
 }

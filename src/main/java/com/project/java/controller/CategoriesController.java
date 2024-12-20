@@ -30,13 +30,4 @@ public class CategoriesController {
         return ResponseEntity.ok("No Result Found");
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllCategories() {
-        List<CategoriesDto> categories = categoriesService.getAllCategories();
-        if (!categories.isEmpty()) {
-            return new ResponseEntity<>(categories, HttpStatus.OK);
-        }
-        return ResponseEntity.ok("No Category Found");
-    }
-
 }

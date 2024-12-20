@@ -1,10 +1,12 @@
 package com.project.java.controller;
 
-import com.project.java.dao.UsersRepository;
+import com.project.java.Utils.SecurityUtils;
+import com.project.java.dto.CategoriesDto;
 import com.project.java.dto.UsersDto;
 import com.project.java.dto.UsersInfo;
-import com.project.java.entity.Users;
 import com.project.java.service.AdminService;
+import com.project.java.service.CategoriesService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
-    private final UsersRepository usersRepository;
+    private final CategoriesService categoriesService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers() {
@@ -65,16 +67,37 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody UsersDto user) {
+    public ResponseEntity<?> saveUser(@RequestBody @Valid UsersDto user) {
         UsersDto usersDto = adminService.saveUser(user);
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UsersDto user, @PathVariable int id) {
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UsersDto user, @PathVariable int id) {
         UsersDto usersDto = adminService.makeAdmin(id);
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/add/category")
+    public ResponseEntity<?> addCategory(@RequestBody @Valid CategoriesDto categoriesDto) {
+        CategoriesDto savedCategory = categoriesService.addCategory(categoriesDto);
+        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/products/{name}")
+    public ResponseEntity<?> updateProductsByCategory(@RequestBody @Valid CategoriesDto categoriesDto, @PathVariable String name) {
+        CategoriesDto savedCategory = categoriesService.updateProductsByCategory(categoriesDto, name);
+        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+    }
+
+    @GetMapping("/all/category")
+    public ResponseEntity<?> getAllCategories() {
+        List<CategoriesDto> categories = categoriesService.getAllCategories();
+        if (!categories.isEmpty()) {
+            return new ResponseEntity<>(categories, HttpStatus.OK);
+        }
+        return ResponseEntity.ok("No Category Found");
     }
 
 
@@ -86,8 +109,8 @@ public class AdminController {
     }
 
     @GetMapping("/{name}")
-    public List<Users> findUser(@PathVariable String name) {
-        return usersRepository.findByStatus(name);
+    public String findUser(@PathVariable String name) {
+        return SecurityUtils.getCurrentUsername();
     }
 
 

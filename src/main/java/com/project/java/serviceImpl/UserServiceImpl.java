@@ -1,9 +1,8 @@
 package com.project.java.serviceImpl;
 
-import com.project.java.Util.DateUtil;
+import com.project.java.Utils.DateUtils;
 import com.project.java.dao.RolesRepository;
 import com.project.java.dao.UsersRepository;
-import com.project.java.dto.RolesDto;
 import com.project.java.dto.UsersDto;
 import com.project.java.entity.Roles;
 import com.project.java.entity.Users;
@@ -17,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public UsersDto updateUser(int id, UsersDto userDto) {
         Users fetchedUser = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not Exist"));
         fetchedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        fetchedUser.setUpdated_at(DateUtil.formatDate());
+        fetchedUser.setUpdated_at(DateUtils.formatDate());
         fetchedUser.setStatus(ACTIVE);
 
         Users updatedUser = usersRepository.save(fetchedUser);
@@ -55,7 +53,7 @@ public class UserServiceImpl implements UserService {
         Users user = modelMapper.map(userDto, Users.class);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setStatus(ACTIVE);
-        user.setCreated_at(DateUtil.formatDate());
+        user.setCreated_at(DateUtils.formatDate());
 
         Set<Roles> roles = new HashSet<>();
         Roles fetchedRole = rolesRepository.findByName(USER);
@@ -63,7 +61,9 @@ public class UserServiceImpl implements UserService {
 
         user.setRoles(roles);
         Users savedUser = usersRepository.save(user);
-        return modelMapper.map(savedUser, UsersDto.class);
+        UsersDto dto = modelMapper.map(savedUser, UsersDto.class);
+        dto.setRoleNames(savedUser.getRoles());
+        return dto;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         Authentication authenticate = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
 
-        if(authenticate.isAuthenticated()){
+        if (authenticate.isAuthenticated()) {
             return jwtService.generateToken(userDto);
         }
         return "Failed";

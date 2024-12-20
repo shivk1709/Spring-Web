@@ -1,9 +1,15 @@
 package com.project.java.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -16,13 +22,23 @@ public class Users {
     @Column(name = "ID")
     private int id;
 
-    @Column(name = "EMAIL")
+    @Email(message = "Email should be valid")
+    @Column(name = "EMAIL", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "PASSWORD")
+    @Column(name = "PHONE_NUMBER", unique = true)
+    @NotBlank(message = "Phone number cannot be empty")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone number must be between 10 and 15 digits, optionally starting with a '+'")
+    private String phoneNumber;
+
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "USERNAME")
+    @NotBlank(message = "Username cannot be empty")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @Column(name = "USERNAME", nullable = false)
     private String username;
 
     @Column(name = "STATUS")
@@ -45,5 +61,8 @@ public class Users {
     )
     private Set<Roles> roles;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Orders> orders;
 
 }

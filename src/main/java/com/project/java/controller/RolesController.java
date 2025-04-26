@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(name = "/role")
+@RequestMapping("/role")
 public class RolesController {
 
     private final RolesService rolesService;
     private final RolesRepository rolesRepository;
 
     @PostMapping
-    public ResponseEntity<?> saveRole(RolesDto role){
+    public ResponseEntity<?> saveRole(@RequestBody RolesDto role){
         return new ResponseEntity<>(rolesService.saveRole(role), HttpStatus.OK);
     }
 

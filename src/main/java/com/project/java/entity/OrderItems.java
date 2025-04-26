@@ -3,6 +3,8 @@ package com.project.java.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name = "ORDERITEMS")
@@ -24,7 +26,7 @@ public class OrderItems {
     private Integer quantity;
 
     @Column(name = "PRICE")
-    private Double price;
+    private BigDecimal price;
 
     @Column(name = "CREATED_AT", updatable = false)
     private String created_at;

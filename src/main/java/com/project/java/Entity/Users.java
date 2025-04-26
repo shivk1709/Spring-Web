@@ -32,7 +32,7 @@ public class Users {
     private String phoneNumber;
 
     @NotBlank(message = "Password cannot be empty")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @Size(min = 2, message = "Password must be at least 6 characters long")
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 

@@ -20,18 +20,20 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter
+{
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
+    {
 
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer"))
+        {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,27 +44,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Authentication authentication
                 = SecurityContextHolder.getContext().getAuthentication();
 
-        if (userName != null && authentication == null) {
+        if (userName != null && authentication == null)
+        {
             //Authenticate
             UserDetails userDetails
                     = userDetailsService.loadUserByUsername(userName);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken authenticationToken
-                            = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-                    authenticationToken.setDetails(
-                            new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(authenticationToken);
-                } else {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write("Access Denied: Insufficient Roles");
-                    return;
+            if (jwtService.isTokenValid(jwt, userDetails))
+            {
+                UsernamePasswordAuthenticationToken authenticationToken
+                        = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                authenticationToken.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
+                );
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authenticationToken);
+            } else
+            {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getWriter().write("Access Denied: Insufficient Roles");
+                return;
             }
         }
         filterChain.doFilter(request, response);

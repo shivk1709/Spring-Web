@@ -6,10 +6,12 @@ import com.project.java.dto.RolesDto;
 import com.project.java.entity.Roles;
 import com.project.java.service.RolesService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class RolesServiceImpl implements RolesService {
 
@@ -17,6 +19,7 @@ public class RolesServiceImpl implements RolesService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public RolesDto saveRole(RolesDto rolesDto) {
         Roles role = modelMapper.map(rolesDto, Roles.class);
         role.setCreated_at(DateUtils.formatDate());

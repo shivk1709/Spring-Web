@@ -9,6 +9,7 @@ import com.project.java.entity.Users;
 import com.project.java.exception.ResourceNotFoundException;
 import com.project.java.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,12 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UsersRepository usersRepository;
@@ -49,6 +51,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public UsersDto saveUser(UsersDto userDto) {
         Users user = modelMapper.map(userDto, Users.class);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));

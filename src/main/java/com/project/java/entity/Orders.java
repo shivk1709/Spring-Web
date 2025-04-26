@@ -3,6 +3,7 @@ package com.project.java.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,7 @@ public class Orders {
     private List<OrderItems> orderItems;
 
     @Column(name = "TOTALPRICE")
-    private Double totalPrice;
+    private BigDecimal totalPrice;
 
     @Column(name = "STATUS")
     private String status;

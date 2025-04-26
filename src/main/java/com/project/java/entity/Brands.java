@@ -5,17 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Entity
-@Table(name = "CATEGORIES")
-public class Categories {
-
+@Table(name = "BRANDS")
+public class Brands
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private int id;
 
     @NotBlank(message = "Category name cannot be empty")
@@ -23,22 +21,13 @@ public class Categories {
     @Column(name = "NAME", nullable = false)
     private String name;
 
-    @NotBlank(message = "Category description cannot be empty")
-    @Size(max = 255, message = "Category description cannot exceed 255 characters")
-    @Column(name = "DESCRIPTION")
-    private String description;
-
     @ElementCollection
-    @CollectionTable(name = "category_images", joinColumns = @JoinColumn(name = "category_id"))
-    @Column(name = "image_url")
-    private List<@Size(max = 255, message = "Image URL too long") String> imageUrls;
+    @CollectionTable(name = "brand_images", joinColumns = @JoinColumn(name = "brand_id"))
+    @Column(name = "IMAGE_URL")
+    private List<@Size(max = 255, message = "Each image URL must be 255 characters or less") String> imageUrl;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Products> products;
-
-    @ManyToOne
-    @JoinColumn(name = "BRAND_ID")
-    private Brands brands;
+    @OneToMany(mappedBy = "brands", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Categories> categories;
 
     @Column(name = "CREATED_AT", updatable = false)
     private String created_at;
@@ -48,5 +37,5 @@ public class Categories {
 
     @Column(name = "DELETED_AT")
     private String deleted_at;
-
+    
 }

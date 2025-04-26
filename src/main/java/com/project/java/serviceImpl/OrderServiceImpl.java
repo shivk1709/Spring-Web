@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -62,9 +63,9 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderItems(orderItems);
 
-        Double totalPrice = orderItems.stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
+        BigDecimal totalPrice = orderItems.stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setTotalPrice(totalPrice);
 

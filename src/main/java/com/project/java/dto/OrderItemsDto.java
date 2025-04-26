@@ -2,6 +2,8 @@ package com.project.java.dto;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class OrderItemsDto {
 
@@ -11,7 +13,7 @@ public class OrderItemsDto {
 
     private Integer quantity;
 
-    private Double price;
+    private BigDecimal price;
 
     private String created_at;
 

@@ -4,15 +4,13 @@ import com.project.java.dto.CategoriesDto;
 import com.project.java.service.CategoriesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/category")
+@CrossOrigin("*")
 public class CategoriesController {
 
     private final CategoriesService categoriesService;
@@ -29,5 +27,17 @@ public class CategoriesController {
         }
         return ResponseEntity.ok("No Result Found");
     }
+
+    @GetMapping()
+    public ResponseEntity<?> getAllCategories()
+    {
+        List<CategoriesDto> categories = categoriesService.getAllCategories();
+        if (!categories.isEmpty())
+        {
+            return new ResponseEntity<>(categories, HttpStatus.OK);
+        }
+        return ResponseEntity.ok("No Category Found");
+    }
+
 
 }

@@ -1,50 +1,74 @@
 package com.project.java.serviceImpl;
 
 import com.project.java.Utils.DateUtils;
-import com.project.java.dto.ProductsDto;
-import com.project.java.entity.Categories;
+import com.project.java.Utils.EnhanceProductDto;
 import com.project.java.dao.CategoriesRepository;
 import com.project.java.dto.CategoriesDto;
+import com.project.java.dto.ProductsDto;
+import com.project.java.entity.Categories;
 import com.project.java.entity.Products;
 import com.project.java.exception.ResourceNotFoundException;
 import com.project.java.service.CategoriesService;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CategoriesServiceImpl implements CategoriesService {
+@Transactional
+@RequiredArgsConstructor
+public class CategoriesServiceImpl implements CategoriesService
+{
 
     private final CategoriesRepository categoriesRepository;
     private final ModelMapper modelMapper;
 
-    public CategoriesServiceImpl(CategoriesRepository categoriesRepository, ModelMapper modelMapper) {
-        this.categoriesRepository = categoriesRepository;
-        this.modelMapper = modelMapper;
-    }
-
     @Override
-    public CategoriesDto getCategoriesByName(String name) {
+    public CategoriesDto getCategoriesByName(String name)
+    {
         Categories category = categoriesRepository.findByName(name);
-        if (category != null) {
+        if (category != null)
+        {
             return modelMapper.map(category, CategoriesDto.class);
         }
         return null;
     }
 
     @Override
-    public List<CategoriesDto> getAllCategories() {
+    public List<CategoriesDto> getAllCategories()
+    {
         List<Categories> categories = categoriesRepository.findAll();
-        return categories.stream().map(category -> modelMapper.map(category, CategoriesDto.class)).toList();
+
+        return categories.stream().map(category ->
+        {
+            var categoryDto = modelMapper.map(category, CategoriesDto.class);
+
+            List<ProductsDto> enhancedProducts = new ArrayList<>();
+            List<Products> originalProducts = category.getProducts();
+            List<ProductsDto> productDtos = categoryDto.getProducts();
+
+            for (int i = 0; i < productDtos.size(); i++)
+            {
+                ProductsDto enhanced = EnhanceProductDto.enhanceProductDto(productDtos.get(i), originalProducts.get(i));
+                enhancedProducts.add(enhanced);
+            }
+
+            categoryDto.setProducts(enhancedProducts);
+            return categoryDto;
+        }).toList();
     }
 
     @Override
-    public CategoriesDto addCategory(CategoriesDto categoriesDto) {
+    public CategoriesDto addCategory(CategoriesDto categoriesDto)
+    {
         Categories category = modelMapper.map(categoriesDto, Categories.class);
         category.setCreated_at(DateUtils.formatDate());
         var products = category.getProducts();
-        products.forEach(product -> {
+        products.forEach(product ->
+        {
             product.setCreated_at(DateUtils.formatDate());
             product.setCategory(category);
         });
@@ -53,9 +77,11 @@ public class CategoriesServiceImpl implements CategoriesService {
     }
 
     @Override
-    public CategoriesDto updateProductsByCategory(CategoriesDto categoriesDto, String name) {
+    public CategoriesDto updateProductsByCategory(CategoriesDto categoriesDto, String name)
+    {
         Categories category = categoriesRepository.findByName(name);
-        if (category == null) {
+        if (category == null)
+        {
             throw new ResourceNotFoundException("Category not found");
         }
 
@@ -65,18 +91,21 @@ public class CategoriesServiceImpl implements CategoriesService {
 
         List<ProductsDto> dtoList = categoriesDto.getProducts();
 
-        for (ProductsDto productDto : dtoList) {
+        for (ProductsDto productDto : dtoList)
+        {
             // If the product already exists, update it. Otherwise, create a new product.
             Products existingProduct = category.getProducts().stream()
                     .filter(product -> product.getName().equals(productDto.getName()))  // Assumption: Unique name
                     .findFirst()
                     .orElse(null);
 
-            if (existingProduct != null) {
+            if (existingProduct != null)
+            {
                 // Update the existing product
                 existingProduct.setDescription(productDto.getDescription());
                 existingProduct.setUpdated_at(DateUtils.formatDate());
-            } else {
+            } else
+            {
                 Products newProduct = modelMapper.map(productDto, Products.class);
                 newProduct.setCategory(category);  // Set the category for the new product
                 newProduct.setUpdated_at(DateUtils.formatDate());

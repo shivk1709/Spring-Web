@@ -1,5 +1,8 @@
 package com.project.java.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -20,12 +23,14 @@ public class CategoriesDto {
     @Size(max = 255, message = "Category description cannot exceed 255 characters")
     private String description;
 
+    private List<@Size(max = 255, message = "Each image URL must be 255 characters or less") String> imageUrl;
+
     private String created_at;
 
     private String updated_at;
 
     private String deleted_at;
 
-    private List<ProductsDto> products;
+    private List<@Valid ProductsDto> products;
 
 }

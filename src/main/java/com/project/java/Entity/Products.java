@@ -1,8 +1,12 @@
 package com.project.java.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.java.dto.WeightUnit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,6 +14,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "PRODUCTS")
+@EqualsAndHashCode
 public class Products {
 
     @Id
@@ -43,11 +48,13 @@ public class Products {
     @Column(name = "FLAVOUR")
     private String flavour;
 
-    @DecimalMin(value = "0.1", inclusive = true, message = "Weight must be at least 0.1 lbs")
-    @DecimalMax(value = "999.9", inclusive = true, message = "Weight cannot exceed 999.9 lbs")
-    @Digits(integer = 3, fraction = 2, message = "Weight must have up to 3 digits and 2 decimal place")
+    @Digits(integer=7, fraction=2, message="Must have up to 2 decimal places")
     @Column(name = "WEIGHT")
-    private BigDecimal weight = BigDecimal.ZERO;
+    private BigDecimal weight;
+
+    @NotNull(message = "Weight unit must be specified")
+    @Column(name = "WEIGHT_UNIT")
+    private WeightUnit weightUnit;
 
     @DecimalMin(value = "0.1", message = "MRP must be at least 0.1")
     @DecimalMax(value = "99999.99", message = "MRP cannot exceed 99999.99")
@@ -57,8 +64,8 @@ public class Products {
 
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
-    private List<@Size(max = 255, message = "Image URL too long") String> imageUrls;
+    @Column(name = "IMAGE_URL")
+    private List<@Size(max = 255, message = "Image URL too long") String> imageUrl;
 
     @Column(name = "CREATED_AT", updatable = false)
     private String created_at;
@@ -71,6 +78,7 @@ public class Products {
 
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
+    @JsonIgnore
     private Categories category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

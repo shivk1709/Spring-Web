@@ -7,14 +7,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/brand")
+@RequestMapping("/brands")
+@CrossOrigin("*")
 public class BrandsController
 {
 
@@ -26,4 +26,16 @@ public class BrandsController
         BrandsDto brandsDto = brandService.addBrand(brandsDtoRequest);
         return new ResponseEntity<>(brandsDto, HttpStatus.OK);
     }
+
+    @GetMapping()
+    public ResponseEntity<?> getAllCategories()
+    {
+        List<BrandsDto> brands = brandService.getAllBrands();
+        if (!brands.isEmpty())
+        {
+            return new ResponseEntity<>(brands, HttpStatus.OK);
+        }
+        return ResponseEntity.ok("No Brand Found");
+    }
+
 }

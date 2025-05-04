@@ -1,9 +1,11 @@
 package com.project.java.dto;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.JoinColumn;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -22,6 +24,6 @@ public class BrandsDto
 
     private List<@Size(max = 255, message = "Each image URL must be 255 characters or less") String> imageUrl;
 
-    List<CategoriesDto> categories;
+    private List<@Valid CategoriesDto> categories;
 
 }

@@ -1,5 +1,8 @@
 package com.project.java.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -30,14 +33,15 @@ public class Categories {
 
     @ElementCollection
     @CollectionTable(name = "category_images", joinColumns = @JoinColumn(name = "category_id"))
-    @Column(name = "image_url")
-    private List<@Size(max = 255, message = "Image URL too long") String> imageUrls;
+    @Column(name = "IMAGE_URL")
+    private List<@Size(max = 255, message = "Image URL too long") String> imageUrl;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Products> products;
 
     @ManyToOne
     @JoinColumn(name = "BRAND_ID")
+    @JsonIgnore
     private Brands brands;
 
     @Column(name = "CREATED_AT", updatable = false)
